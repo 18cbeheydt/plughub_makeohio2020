@@ -7,7 +7,7 @@ function httpGet(theUrl)
     return xmlHttp.responseText;
 }
 
-var response = httpGet('http://localhost:8003/data.csv');//httpGet('http://192.168.43.41:1880/data.csv');
+var response = httpGet('http://192.168.43.41:1880/data.csv');//httpGet('http://localhost:8003/data.csv');
 var data = response.split("\n");
 var dataArray = [], size = 1;
 while (data.length > 0){

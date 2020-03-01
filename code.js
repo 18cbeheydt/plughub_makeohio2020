@@ -1,4 +1,5 @@
-var dataPoints = 800;
+var numPoints = 60;
+var dataStart = 0;
 function httpGet(theUrl)
 {
     var xmlHttp = new XMLHttpRequest();
@@ -25,35 +26,55 @@ var tempArray = [];
 var co2Array = [];
 var tvocArray = [];
 var kWhArray = [];
+var fanArray = [];
 var humCount = 0;
 var tempCount = 0;
 var co2Count = 0;
 var tvocCount = 0;
 var kWhCount = 0;
-
-//console.log(newDataArray);
-for (var i = 1; i < newDataArray.length; i++) {
+var fanCount = 0;
+console.log(dataStart);
+console.log(newDataArray.length);
+console.log(newDataArray);
+for (var i = 0; i < newDataArray.length; i++) {
   switch(newDataArray[i][1]){
 	  case "humidity":
-		humidityArray[humCount] = newDataArray[i];
-		humCount++;
-		break;
+      humidityArray[humCount] = newDataArray[i];
+      humCount++;
+      break;
 	  case "temperature":
-		tempArray[tempCount] = newDataArray[i];
-		tempCount++;
-		break;
-      case "co2":
-		co2Array[co2Count] = newDataArray[i];
-		co2Count++;
-		break;
+      tempArray[tempCount] = newDataArray[i];
+      tempCount++;
+      break;
+    case "co2":
+      co2Array[co2Count] = newDataArray[i];
+      co2Count++;
+      break;
 	  case "tvoc":
-		tvocArray[tvocCount] = newDataArray[i];
-		tvocCount++;
-		break;
-	  case "wms":
-		kWhArray[tvocCount] = (newDataArray[i]+tvocArray[kWhCount-1])/(3.6*Math.pow(10,9));
-		tvocCount++;
-		break;
+      tvocArray[tvocCount] = newDataArray[i];
+      tvocCount++;
+      break;
+	  case "toaster_power":
+      // if(i > 0){
+      //   kWhArray[kWhCount] = 1.0*(newDataArray[i]+kWhArray[kWhCount-1]);//(3.6*Math.pow(10.0,9));
+      
+      // } else{
+      //   kWhArray[kWhCount] = newDataArray[i];
+      // }
+      
+      // if(kWhCount > 0){
+      //   kWhArray[kWhCount] = 1.0*(newDataArray[i]+kWhArray[kWhCount-1]);
+      //   console.log(kWhArray[kWhCount-1]);
+      // } else {
+      //   kWhArray[0] = newDataArray[i];
+      // }
+      kWhArray[kWhCount] = newDataArray[i];
+      kWhCount++;
+      break;
+    case "fan_power":
+      fanArray[fanCount] = newDataArray[i];
+      fanCount++;
+      break;
   }
 }
 
@@ -61,7 +82,7 @@ for (var i = 1; i < newDataArray.length; i++) {
 function getData(theArray){
   var dict = [];
 
-  for (var i = 0; i < theArray.length; i++) {
+  for (var i = theArray.length-numPoints; i < theArray.length; i++) {
     var d = new Date(0);
     d.setUTCSeconds(theArray[i][0]);
     dict.push({
@@ -72,7 +93,7 @@ function getData(theArray){
   }
 
   var arrToReturn = []
-  for (var i = 0; i < dataPoints + 1; i++) {
+  for (var i = 0; i < dict.length; i++) {
     arrToReturn[i] = dict[i];
   }
   return arrToReturn;
@@ -82,13 +103,16 @@ var humidityValue = getData(humidityArray);
 var temperatureValue = getData(tempArray);
 var co2Value = getData(co2Array);
 var tvocValue = getData(tvocArray);
+var toasterkWhValue = getData(kWhArray);
+var fankWhValue = getData(fanArray);
+console.log(kWhArray);
 
-var containerNames = ["chartContainer1","chartContainer2","chartContainer3","chartContainer4"];
-var chartTitles = ["Humidity", "Temperature", "CO2", "TVOC"];
-var xAxisNames = ["DD MMM", "DD MMM", "DD MMM", "DD MMM"];
-var yAxisNames = ["% Humidity","Fahrenheit", "CO2 ppm", "TVOC ppm"];
-var chartColors = ["red","orange","green","blue"];
-var dataPointVars = [humidityValue,temperatureValue,co2Value,tvocValue];
+var containerNames = ["chartContainer1","chartContainer2","chartContainer3","chartContainer4","chartContainer5", "chartContainer6"];
+var chartTitles = ["Humidity", "Temperature", "CO2", "TVOC","Toaster Power Consumption", "Fan Power Consumption"];
+var xAxisNames = ["DD MMM", "DD MMM", "DD MMM", "DD MMM", "DD MMM", "DD MMM"];
+var yAxisNames = ["% Humidity","Fahrenheit", "CO2 ppm", "TVOC ppm", "kWh", "kWh"];
+var chartColors = ["red","orange","green","red","purple", "black"];
+var dataPointVars = [humidityValue,temperatureValue,co2Value,tvocValue,toasterkWhValue, fankWhValue];
 var charts = [];
 
 window.onload = function () {
@@ -138,7 +162,7 @@ for(var i = 0; i < this.containerNames.length; i++){
 }
 
 
-for(var i=0; i < 4; i++){
+for(var i=0; i < this.charts.length; i++){
     charts[i].render();
 }
 
@@ -148,7 +172,7 @@ function toggleDataSeries(e){
 	} else{
 		e.dataSeries.visible = true;
 	}
-	for(var i=0; i < 4; i++){
+	for(var i=0; i < this.charts.length; i++){
         charts[i].render();
     }
 }

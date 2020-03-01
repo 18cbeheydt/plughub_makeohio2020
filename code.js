@@ -25,7 +25,6 @@ var tempArray = [];
 var co2Array = [];
 var tvocArray = [];
 var kWhArray = [];
-
 var humCount = 0;
 var tempCount = 0;
 var co2Count = 0;
@@ -33,10 +32,6 @@ var tvocCount = 0;
 var kWhCount = 0;
 
 //console.log(newDataArray);
-// for (var i = 0; i < newDataArray.length; i++) {
-//   var d = new Date(0);
-//   d.setUTCSeconds(utcSeconds);
-// }
 for (var i = 1; i < newDataArray.length; i++) {
   switch(newDataArray[i][1]){
 	  case "humidity":

@@ -84,9 +84,9 @@ var co2Value = getData(co2Array);
 var tvocValue = getData(tvocArray);
 
 var containerNames = ["chartContainer1","chartContainer2","chartContainer3","chartContainer4"];
-var chartTitles = ["Humidity", "Temperature", "CO2", "VOTC"];
+var chartTitles = ["Humidity", "Temperature", "CO2", "TVOC"];
 var xAxisNames = ["DD MMM", "DD MMM", "DD MMM", "DD MMM"];
-var yAxisNames = ["% Humidity","Fahrenheit", "CO2 ppm", "VOTC ppm"];
+var yAxisNames = ["% Humidity","Fahrenheit", "CO2 ppm", "TVOC ppm"];
 var chartColors = ["red","orange","green","blue"];
 var dataPointVars = [humidityValue,temperatureValue,co2Value,tvocValue];
 var charts = [];

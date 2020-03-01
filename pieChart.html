@@ -1,0 +1,269 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+/* Pattern styles */
+.container {
+  display: table;
+  width: 100%;
+}
+
+.left-half {
+  position: absolute;
+  left: 0px;
+  width: 50%;
+}
+
+.right-half {
+  position: absolute;
+  right: 0px;
+  width: 50%;
+}
+</style>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script>
+
+
+
+function httpGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+var response = httpGet('http://192.168.43.41:1880/data.csv');//httpGet('http://localhost:8003/data.csv');
+var data = response.split("\n");
+var dataArray = [], size = 1;
+while (data.length > 0){
+      dataArray.push(data.splice(0, size));
+}
+//console.log(dataArray)
+var newDataArray = [];
+for (var i = 0; i < dataArray.length; i++) {
+  newDataArray[i] = dataArray[i].toString().split(",");
+}
+//console.log(newDataArray);
+
+var fanArray = [];
+var toasterArray = [];
+
+var fanCount = 0;
+var toasterCount = 0;
+
+//console.log(newDataArray);
+// for (var i = 0; i < newDataArray.length; i++) {
+//   var d = new Date(0);
+//   d.setUTCSeconds(utcSeconds);
+// }
+for (var i = 0; i < newDataArray.length; i++) {
+  if(newDataArray[i][1] == "toaster_power"){
+		if(newDataArray[i][2] < 27701080){
+			toasterArray[toasterCount] = newDataArray[i];
+			toasterCount++;
+		}
+	}else if(newDataArray[i][1] == "fan_power"){
+			fanArray[fanCount] = newDataArray[i];
+			fanCount++;
+	}
+}
+
+
+//console.log(humidityArray);
+function getData(theArray){
+  var dict = [];
+
+  for (var i = 0; i < theArray.length; i++) {
+    var d = new Date(0);
+    d.setUTCSeconds(theArray[i][0]);
+    dict.push({
+      x: d,
+      y: parseInt(theArray[i][2])
+    });
+  }
+
+  var arrToReturn = []
+  for (var i = 0; i < 60; i++) {
+    arrToReturn[i] = dict[i];
+  }
+  return arrToReturn;
+}
+
+console.log(fanArray);
+
+var toasterValue = getData(toasterArray);
+var fanValue = getData(fanArray);
+
+function getSum(theArray){
+	var sum = 0;
+	for (var i = 0; i < theArray.length; i++) {
+		sum = sum + parseInt(theArray[i][2]);
+	}
+	return sum;
+}
+
+
+var sumOfY = getSum(toasterArray);
+var sumOfX = getSum(fanArray);
+var yPieValue = 100 * (sumOfX / (sumOfX + sumOfY));
+var xPieValue = 100 * (sumOfY / (sumOfX + sumOfY));
+//console.log(xPieValue);
+
+window.onload = function() {
+
+
+var chart = new CanvasJS.Chart("1234", {
+	animationEnabled: true,
+	title: {
+		text: "Total Power Consumption 2020"
+	},
+	data: [{
+		type: "pie",
+		startAngle: 240,
+		yValueFormatString: "##0.00\"%\"",
+		indexLabel: "{label} {y}",
+		dataPoints: [
+			{y: xPieValue, label: "toaster_power"},
+			{y: yPieValue, label: "fan_power"}
+		]
+	}]
+});
+chart.render();
+
+
+var chart2 = new CanvasJS.Chart("chartContainer2", {
+	animationEnabled: true,
+	theme: "light2",
+	title:{
+		text: "Toaster Power"
+	},
+	axisX:{
+		valueFormatString: "DD MMM",
+		crosshair: {
+			enabled: true,
+			snapToDataPoint: true
+		}
+	},
+	axisY: {
+		title: "Number of Visits",
+		crosshair: {
+			enabled: true
+		}
+	},
+	toolTip:{
+		shared:true
+	},
+	legend:{
+		cursor:"pointer",
+		verticalAlign: "bottom",
+		horizontalAlign: "left",
+		dockInsidePlotArea: true,
+		itemclick: toogleDataSeries
+	},
+	data: [{
+		type: "line",
+		showInLegend: true,
+		name: "Total Power",
+		markerType: "square",
+		xValueFormatString: "DD MMM, YYYY",
+		color: "#6F86D4",
+		dataPoints: toasterValue
+	}]
+});
+chart2.render();
+
+function toogleDataSeries(e){
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	} else{
+		e.dataSeries.visible = true;
+	}
+	chart2.render();
+}
+
+
+
+
+var chart3 = new CanvasJS.Chart("chartContainer3", {
+	animationEnabled: true,
+	theme: "light2",
+	title:{
+		text: "Fan Power"
+	},
+	axisX:{
+		valueFormatString: "DD MMM",
+		crosshair: {
+			enabled: true,
+			snapToDataPoint: true
+		}
+	},
+	axisY: {
+		title: "Number of Visits",
+		crosshair: {
+			enabled: true
+		}
+	},
+	toolTip:{
+		shared:true
+	},
+	legend:{
+		cursor:"pointer",
+		verticalAlign: "bottom",
+		horizontalAlign: "left",
+		dockInsidePlotArea: true,
+		itemclick: toogleDataSeries
+	},
+	data: [{
+		type: "line",
+		showInLegend: true,
+		name: "Total Power",
+		markerType: "square",
+		xValueFormatString: "DD MMM, YYYY",
+		color: "#F08080",
+		dataPoints: fanValue
+	}]
+});
+chart3.render();
+
+function toogleDataSeries(e){
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	} else{
+		e.dataSeries.visible = true;
+	}
+	chart3.render();
+}
+
+
+}
+
+
+
+</script>
+</head>
+<body>
+<div id="1234" style="height: 300px; width: 100%;"></div>
+
+<section class="container">
+<div class="left-half">
+<div id="chartContainer2" style="height: 300px; width: 100%;"></div>
+</div>
+
+<div class="right-half">
+<div id="chartContainer3" style="height: 300px; width: 100%"></div>
+</div>
+
+</section>
+
+
+<!-- <div class="div-left">
+<div id="chartContainer2" style="height: 300px;"></div>
+</div>
+
+<div class="div-right">
+<div id="chartContainer3" style="height: 300px;"></div>
+</div> -->
+
+</body>
+</html>

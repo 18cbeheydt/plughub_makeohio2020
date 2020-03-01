@@ -55,16 +55,9 @@ for (var i = 0; i < newDataArray.length; i++) {
       tvocCount++;
       break;
 	  case "toaster_power":
-      // if(i > 0){
-      //   kWhArray[kWhCount] = 1.0*(newDataArray[i]+kWhArray[kWhCount-1]);//(3.6*Math.pow(10.0,9));
-      
-      // } else{
-      //   kWhArray[kWhCount] = newDataArray[i];
-      // }
-      
       // if(kWhCount > 0){
-      //   kWhArray[kWhCount] = 1.0*(newDataArray[i]+kWhArray[kWhCount-1]);
-      //   console.log(kWhArray[kWhCount-1]);
+      //   kWhArray[kWhCount] = 1.0*(parseInt(newDataArray[i][2])+kWhArray[kWhCount-1]);
+      //   //console.log(kWhArray[kWhCount-1]);
       // } else {
       //   kWhArray[0] = newDataArray[i];
       // }
@@ -72,6 +65,14 @@ for (var i = 0; i < newDataArray.length; i++) {
       kWhCount++;
       break;
     case "fan_power":
+      // if(fanCount > 0){
+      //   fanArray[fanCount] = 1.0*(parseInt(newDataArray[i][2])+parseInt(fanArray[fanCount-1][2]));
+      //   console.log(parseInt(newDataArray[i][2]));
+      //   console.log(parseInt(fanArray[fanCount-1][2]));
+      //   //console.log(fanArray[fanCount-1]);
+      // } else {
+      //   fanArray[0] = newDataArray[i];
+      // }
       fanArray[fanCount] = newDataArray[i];
       fanCount++;
       break;
